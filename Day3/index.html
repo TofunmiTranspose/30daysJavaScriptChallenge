@@ -1,52 +1,71 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Scoped CSS Variables and JS</title>
-  <link rel="icon" href="https://fav.farm/🔥" />
-</head>
-<body>
-  <h2>Update CSS Variables with <span class='hl'>JS</span></h2>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Changing themes with JavaScript</title>
+    <link rel="icon" href="https://fav.farm/🔥" />
+  </head>
+  <body>
+    <h2>Change theme with <span class="hl">JS</span></h2>
+    <div class="controls">
+      <label for="spacing">Spacing:</label>
+      <input id="spacing" type="range" name="spacing" min="20" max="100" value="10" data-sizing="px"/>
+      <label for="blur">Blur:</label>
+      <input id="blur" type="range" name="blur"  min="0" max="25" value="10" data-sizing="px"/>
+      <label for="base">Base Color</label>
+      <input id="base" type="color" name="base" value="#ffc600" />
+    </div>
+    <img src="Profile picture .png" class="img"/>
+    <style>
+      :root {
+        --base: #00e1ff;
+        --spacing: 20px;
+        --blur: 10px;
+      }
+      img {
+        width: 40vh;
+        padding: var(--spacing);
+        background-color: var(--base);
+        filter: blur(var(--blur));
+        border-radius: 50%;
+        box-shadow: 0 0 100px -15px white, 0 0 100px 0px black;
+      }
+      h2 > .hl {
+        color: var(--base);
+      }
+      body {
+        text-align: center;
+        background: #193549;
+        color: white;
+        font-family: "helvetica neue", sans-serif;
+        font-weight: 100;
+        font-size: 50px;
+      }
+      .controls {
+        margin-bottom: 50px;
+      }
+      input {
+        width: 100px;
+      }
+    </style>
+    <script>
+      const s = document.querySelector("#spacing");
+      const b = document.querySelector("#blur");
+      const c = document.querySelector("#base");
 
-  <div class="controls">
-    <label for="spacing">Spacing:</label>
-    <input id="spacing" type="range" name="spacing" min="10" max="200" value="10" data-sizing="px">
-
-    <label for="blur">Blur:</label>
-    <input id="blur" type="range" name="blur" min="0" max="25" value="10" data-sizing="px">
-
-    <label for="base">Base Color</label>
-    <input id="base" type="color" name="base" value="#ffc600">
-  </div>
-
-  <img src="https://source.unsplash.com/7bwQXzbF6KE/800x500">
-
-  <style>
-
-    /*
-      misc styles, nothing to do with CSS variables
-    */
-
-    body {
-      text-align: center;
-      background: #193549;
-      color: white;
-      font-family: 'helvetica neue', sans-serif;
-      font-weight: 100;
-      font-size: 50px;
-    }
-
-    .controls {
-      margin-bottom: 50px;
-    }
-
-    input {
-      width: 100px;
-    }
-  </style>
-
-  <script>
-  </script>
-
-</body>
+      s.addEventListener("change", () => {
+        const sv = s.value;
+        document.documentElement.style.setProperty("--spacing", `${sv}px`);
+      });
+      b.addEventListener("change", () => {
+        const bv = b.value;
+        document.documentElement.style.setProperty("--blur", `${bv}px`);
+      });
+      c.addEventListener("change", () => {
+        const cv = c.value;
+        document.documentElement.style.setProperty("--base", cv);
+        console.log(cv);
+      });
+    </script>
+  </body>
 </html>
