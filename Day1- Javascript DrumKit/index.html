@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <title>JS Drum Kit</title>
   <link rel="stylesheet" href="style.css">
-  <link rel="icon" href="https://fav.farm/🔥" />
+  <link rel="icon" href="https://fav.farm/🥁" />
 </head>
 <body>
 
@@ -59,8 +59,24 @@
   <audio data-key="75" src="sounds/tom.wav"></audio>
   <audio data-key="76" src="sounds/tink.wav"></audio>
 
-<script src="app.js"></script>
-
-
+<script>
+  window.addEventListener('click', ()=>{
+    document.querySelector('input').focus();
+  });
+  window.addEventListener('keydown', p);
+function p(e) {
+  d = (d) => document.querySelector(d);
+  k = e.keyCode;
+  a = d(`audio[data-key="${k}"]`);
+  key = d(`div[data-key="${k}"]`);
+  if (!a) return;
+  key.classList.add('playing');
+  a.currentTime = 0;
+  a.play();
+  setTimeout(() => {
+    key.classList.remove('playing');}
+  ,50); 
+};
+</script>
 </body>
 </html>

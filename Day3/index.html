@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Changing themes with JavaScript</title>
+    <link rel="icon" href="https://fav.farm/🔥" />
+  </head>
+  <body>
+    <h2>Change theme with <span class="hl">JS</span></h2>
+    <div class="controls">
+      <div class="div1">
+        <label for="spacing">Spacing</label>
+        <label for="blur">Blur</label> 
+        <label for="base">BaseColor</label>
+      </div>
+      <div class="div2">
+        <input id="spacing" type="range" name="spacing" min="20" max="80" value="10" data-sizing="px"/>
+        <input id="blur" type="range" name="blur"  min="0" max="25" value="10" data-sizing="px"/>
+        <input id="base" type="color" name="base" value="#ffc600" />
+      </div>
+    </div>
+    <img src="Profile picture .png" class="img"/>
+    <style>
+      :root {
+        --base: #00e1ff;
+        --spacing: 20px;
+        --blur: 10px;
+      }
+      img {
+        width: 40vh;
+        padding: var(--spacing);
+        background-color: var(--base);
+        filter: blur(var(--blur));
+        border-radius: 50%;
+        box-shadow: 0 0 100px -15px white, 0 0 100px 0px black;
+      }
+      h2 > .hl {
+        color: var(--base);
+      }
+      body {
+        text-align: center;
+        background: #193549;
+        color: white;
+        font-family: "helvetica neue", sans-serif;
+        font-weight: 100;
+        font-size: 50px;
+      }
+      input{
+        margin:0 5vw;
+        transform: scale(2.2);
+      }
+      .controls {
+        margin-bottom: 50px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+        width: 80%;
+        margin: 0 auto;
+      }
+      .controls div{
+        width: 100%;
+        align-self: center;
+        display: flex;
+        justify-content: space-around;
+        margin-bottom: 5vh;
+      }
+      input {
+        width: 100px;
+      }
+    </style>
+    <script>
+      const s = document.querySelector("#spacing");
+      const b = document.querySelector("#blur");
+      const c = document.querySelector("#base");
+
+      s.addEventListener("change", () => {
+        const sv = s.value;
+        document.documentElement.style.setProperty("--spacing", `${sv}px`);
+      });
+      b.addEventListener("change", () => {
+        const bv = b.value;
+        document.documentElement.style.setProperty("--blur", `${bv}px`);
+      });
+      c.addEventListener("change", () => {
+        const cv = c.value;
+        document.documentElement.style.setProperty("--base", cv);
+        console.log(cv);
+      });
+    </script>
+  </body>
+</html>
