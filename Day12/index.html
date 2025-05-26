@@ -1,66 +1,212 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Day13</title>
+    <title>Sweet KeyCode Checker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
-      body {
-        display: flex;
-        flex-direction: column;
-        padding-top: 10vh;
-        box-sizing: border-box;
-        align-items: center;
-        height: 99vh;
-        background: linear-gradient(pink, red);
-      }
-      h2 {
-        margin: 5% auto;
-        width: 300px;
-        color: #003bfd;
-        font-family: sans-serif;
-        font-size: 2rem;
-        text-align: center;
-      }
-      .wrapper {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        border: 3px solid green;
-        border-radius: 10px;
-        padding: 10px 20px;
-        margin-top: 5vh;
-      }
-      .display {
-        color: white;
-        font-size: 1.5rem;
-        font-family: Georgia, serif;
-      }
-      input {
-        border: 0;
-        padding: 5px 10px;
-      }
-    </style>
-  </head>
-  <body>
-    <h2>KeyCode Checker</h2>
-    <input type="password" placeholder="Password is - transpose" />
-    <div class="wrapper">
-      <div class="display"></div>
-    </div>
-    <script>
-      let pressed = [];
-      const passCode = "transpose";
-      window.addEventListener("keypress", (e) => {
-        pressed.push(e.key);
-        // using a negative number for splice start will
-        //count the start index from behind
-        pressed.splice(-passCode.length - 1, pressed.length - passCode.length);
-        if (pressed.join("").includes(passCode)) {
-          document.querySelector(".display").textContent = pressed.join("");
-          document.querySelector("input").value = "";
+        /* --- CSS Variables for easy color management --- */
+        :root {
+            --primary-bg-start: #FFDAB9; /* Peach Puff */
+            --primary-bg-end: #FF69B4;   /* Hot Pink */
+            --heading-color: #6A00F2;    /* Deep Purple */
+            --text-color-light: #f8f8f8;
+            --text-color-dark: #333;
+            --card-bg: rgba(255, 255, 255, 0.15); /* Frosted glass effect */
+            --input-bg: rgba(255, 255, 255, 0.95);
+            --input-border-focus: #00BFFF; /* Deep Sky Blue */
+            --display-border: #FFD700;   /* Gold */
+            --display-text-color: #f0f0f0; /* Off-white for display */
+            --shadow-light: rgba(0, 0, 0, 0.1);
+            --shadow-medium: rgba(0, 0, 0, 0.25);
+            --shadow-dark: rgba(0, 0, 0, 0.4);
         }
-      });
+
+        /* --- Body Styling --- */
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center; /* Center content vertically */
+            align-items: center;
+            min-height: 100vh; /* Use min-height for full viewport */
+            margin: 0; /* Remove default body margin */
+            padding: 20px; /* Add some padding for small screens */
+            box-sizing: border-box;
+            /* Sweeter gradient */
+            background: linear-gradient(135deg, var(--primary-bg-start) 0%, var(--primary-bg-end) 100%);
+            font-family: 'Montserrat', sans-serif; /* Modern font */
+            color: var(--text-color-dark);
+            overflow-x: hidden; /* Prevent horizontal scroll */
+        }
+
+        /* --- Heading Styling --- */
+        h2 {
+            margin: 0px auto 40px auto; /* Adjust margin for better spacing */
+            max-width: 400px;
+            color: var(--heading-color);
+            font-family: 'Montserrat', sans-serif;
+            font-size: clamp(2.2rem, 6vw, 4rem); /* Responsive font size */
+            text-align: center;
+            text-shadow: 3px 3px 7px var(--shadow-medium); /* Deeper text shadow */
+            letter-spacing: 1.5px;
+            position: relative;
+            padding-bottom: 15px; /* Space for pseudo-element */
+        }
+
+        h2::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            bottom: 0;
+            transform: translateX(-50%);
+            width: 100px; /* Wider underline */
+            height: 5px; /* Thicker underline */
+            background-color: var(--display-border); /* Gold underline */
+            border-radius: 3px;
+            box-shadow: 0 2px 5px var(--shadow-light);
+        }
+
+        /* --- Main Container (New) --- */
+        .container {
+            background-color: var(--card-bg); /* Semi-transparent background */
+            backdrop-filter: blur(12px); /* Frosted glass effect */
+            -webkit-backdrop-filter: blur(12px); /* For Safari support */
+            border-radius: 20px;
+            padding: 40px 30px;
+            box-shadow: 0 15px 40px var(--shadow-dark), 0 0 0 2px rgba(255, 255, 255, 0.1) inset; /* Enhanced shadow and inner glow */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px; /* Space between elements */
+            border: 1px solid rgba(255, 255, 255, 0.3); /* Subtle border */
+            max-width: 90%;
+            width: 480px; /* Preferred width */
+        }
+
+        /* --- Input Styling --- */
+        input {
+            width: calc(100% - 40px); /* Adjust for padding */
+            padding: 18px 20px;
+            border: none;
+            border-radius: 10px;
+            background-color: var(--input-bg);
+            font-size: 1.2rem;
+            font-family: 'Roboto Mono', monospace; /* Monospace for code-like input */
+            color: var(--text-color-dark);
+            text-align: center;
+            box-shadow: inset 0 3px 8px var(--shadow-light); /* Deeper inner shadow */
+            transition: all 0.3s ease;
+            outline: none; /* Remove default outline */
+        }
+
+        input::placeholder {
+            color: #999;
+            opacity: 0.8;
+            font-style: italic;
+        }
+
+        input:focus {
+            background-color: #fff;
+            box-shadow: inset 0 3px 10px var(--shadow-medium), 0 0 0 4px var(--input-border-focus); /* Stronger highlight on focus */
+        }
+
+        /* --- Wrapper (Display Area) Styling --- */
+        .wrapper {
+            width: 100%; /* Occupy full container width */
+            min-height: 100px; /* Ensure display area has good height */
+            background-color: rgba(0, 0, 0, 0.3); /* Darker background for display */
+            border: 3px dashed var(--display-border); /* Gold dashed border */
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
+            overflow: hidden; /* Hide overflow text */
+            position: relative; /* For potential future animations */
+            box-shadow: 0 5px 15px var(--shadow-medium);
+        }
+
+        /* --- Display Text Styling --- */
+        .display {
+            color: var(--display-text-color); /* Light color for contrast */
+            font-size: clamp(1.6rem, 4vw, 2.5rem); /* Responsive font size */
+            font-family: 'Roboto Mono', monospace;
+            text-align: center;
+            word-break: break-all; /* Break long words */
+            text-shadow: 1px 1px 3px var(--shadow-dark); /* Subtle text shadow */
+        }
+
+        /* --- Responsive Adjustments --- */
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px 20px;
+                gap: 25px;
+            }
+            h2 {
+                margin-bottom: 30px;
+                font-size: clamp(1.8rem, 5vw, 3rem);
+            }
+            input {
+                font-size: 1rem;
+                padding: 15px;
+            }
+            .wrapper {
+                min-height: 80px;
+                padding: 15px;
+            }
+            .display {
+                font-size: clamp(1.4rem, 3.5vw, 2rem);
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 15px;
+            }
+            .container {
+                padding: 25px 15px;
+                gap: 20px;
+            }
+            h2 {
+                margin-bottom: 25px;
+                font-size: clamp(1.5rem, 5vw, 2.5rem);
+            }
+            input {
+                padding: 12px 15px;
+            }
+            .wrapper {
+                min-height: 70px;
+            }
+            .display {
+                font-size: clamp(1.2rem, 3vw, 1.8rem);
+            }
+        }
+    </style>
+</head>
+<body>
+    <h2>KeyCode Checker</h2>
+    <div class="container">
+        <input type="password" placeholder="Password is - transpose">
+        <div class="wrapper">
+            <div class="display"></div>
+        </div>
+    </div>
+
+    <script>
+        let pressed = [];
+        const passCode = "transpose";
+        window.addEventListener("keypress", (e) => {
+            pressed.push(e.key);
+            // using a negative number for splice start will
+            //count the start index from behind
+            pressed.splice(-passCode.length - 1, pressed.length - passCode.length);
+            if (pressed.join("").includes(passCode)) {
+                document.querySelector(".display").textContent = pressed.join('');
+                document.querySelector("input").value = '';
+            }
+        });
     </script>
-  </body>
+</body>
 </html>
