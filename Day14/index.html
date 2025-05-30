@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Password Reveal - Catchy Style</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Roboto+Mono:wght@400&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --primary-bg-start: #fddb92;
+        --primary-bg-end: #d1fdff;
+        --card-bg: #ffffff;
+        --heading-color: #3f51b5;
+        --input-border-color: #e0e0e0;
+        --input-focus-border: #80cbc4;
+        --input-text-color: #424242;
+        --button-bg: #4caf50;
+        --button-hover-bg: #66bb6a;
+        --shadow-color-light: rgba(0, 0, 0, 0.1);
+        --shadow-color-medium: rgba(0, 0, 0, 0.2);
+        --shadow-color-strong: rgba(0, 0, 0, 0.3);
+      }
+
+      body {
+        display: flex;
+        height: 100vh;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(
+          135deg,
+          var(--primary-bg-start) 0%,
+          var(--primary-bg-end) 100%
+        );
+        font-family: "Poppins", sans-serif;
+        margin: 0;
+        padding: 20px;
+        box-sizing: border-box;
+      }
+
+      .wrapper {
+        box-sizing: border-box;
+        background-color: var(--card-bg);
+        border-radius: 15px;
+        width: min(90vw, 450px);
+        padding: 40px 30px;
+        box-shadow: 0 10px 30px var(--shadow-color-medium),
+          0 0 0 2px rgba(255, 255, 255, 0.5) inset;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+        transition: all 0.3s ease-in-out;
+      }
+
+      .wrapper:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 40px var(--shadow-color-strong),
+          0 0 0 2px rgba(255, 255, 255, 0.6) inset;
+      }
+
+      h2 {
+        margin-top: 0;
+        margin-bottom: 30px;
+        color: var(--heading-color);
+        font-size: clamp(2rem, 5vw, 2.8rem);
+        font-weight: 700;
+        text-align: center;
+        position: relative;
+        padding-bottom: 10px;
+      }
+
+      h2::after {
+        content: "";
+        position: absolute;
+        left: 50%;
+        bottom: 0;
+        transform: translateX(-50%);
+        width: 70px;
+        height: 4px;
+        background: linear-gradient(
+          90deg,
+          var(--input-focus-border) 0%,
+          #4dd0e1 100%
+        );
+        border-radius: 2px;
+      }
+
+      input[type="text"],
+      input[type="password"] {
+        width: calc(100% - 20px);
+        padding: 12px 15px;
+        border: 2px solid var(--input-border-color);
+        border-radius: 8px;
+        outline: none;
+        font-size: 1rem;
+        color: var(--input-text-color);
+        font-family: "Roboto Mono", monospace;
+        box-shadow: inset 0 2px 5px var(--shadow-color-light);
+        transition: all 0.3s ease;
+      }
+
+      input[type="text"]::placeholder,
+      input[type="password"]::placeholder {
+        color: #a0a0a0;
+        opacity: 0.8;
+      }
+
+      input[type="text"]:focus,
+      input[type="password"]:focus {
+        border-color: var(--input-focus-border);
+        box-shadow: inset 0 2px 8px var(--shadow-color-medium),
+          0 0 0 3px var(--input-focus-border);
+      }
+
+      .input-group {
+        position: relative;
+        width: 100%;
+        max-width: 300px;
+        margin-bottom: 10px;
+      }
+
+      .input-group input {
+        width: calc(100% - 20px);
+        padding-right: 40px;
+      }
+
+      #eye {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        width: 20px;
+        height: 20px;
+        opacity: 0.7;
+        transition: opacity 0.2s ease;
+      }
+
+      #eye:hover {
+        opacity: 1;
+      }
+
+      #submit {
+        margin-top: 25px;
+        color: white;
+        background-color: var(--button-bg);
+        padding: 12px 30px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 1.1rem;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        box-shadow: 0 4px 10px var(--shadow-color-medium);
+        transition: all 0.3s ease;
+      }
+
+      #submit:hover {
+        background-color: var(--button-hover-bg);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px var(--shadow-color-strong);
+      }
+
+      #submit:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 5px var(--shadow-color-light);
+      }
+
+      br {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrapper">
+      <h2>Login</h2>
+      <input placeholder="Email" type="text" id="email" />
+      <div class="input-group">
+        <input placeholder="Password" type="password" id="password" />
+        <img
+          id="eye"
+          src="/eye1.svg"
+          width="20px"
+          alt="Toggle Password Visibility"
+        />
+      </div>
+      <input type="button" value="Submit" id="submit" />
+    </div>
+
+    <script>
+      const password = document.querySelector("#password");
+      const email = document.querySelector("#email");
+      const submit = document.querySelector("#submit");
+      const eye = document.querySelector("#eye");
+      let currentEye = "eye1.svg";
+      eye.src = currentEye;
+
+      eye.addEventListener("click", () => {
+        password.type === "password"
+          ? (password.type = "text")
+          : (password.type = "password");
+      });
+    </script>
+  </body>
+</html>
