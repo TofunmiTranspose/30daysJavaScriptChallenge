@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Light On and Off</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts - Inter for general text -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Base styles from original CSS, enhanced with Tailwind where possible */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: #222; /* Default dark background */
+            font-family: 'Inter', sans-serif;
+            transition: background 0.5s ease-in-out; /* Smooth transition for background change */
+        }
+
+        body.on {
+            /* Radial gradient for "light on" effect */
+            background: radial-gradient(#555, #111);
+        }
+
+        /* Wire styling */
+        .wire {
+            position: absolute;
+            left: calc(50% - 2px); /* Center the wire */
+            bottom: 50%; /* Position from the bottom */
+            width: 4px;
+            height: 60vh; /* Responsive height */
+            background: #000;
+            z-index: 1;
+            border-radius: 2px; /* Slightly rounded wire */
+        }
+
+        /* Bulb styling */
+        .bulb {
+            position: relative;
+            width: 80px;
+            height: 80px;
+            background: #444; /* Default dark bulb */
+            border-radius: 50%;
+            z-index: 2;
+            transition: background-color 0.5s ease-in-out, box-shadow 0.5s ease-in-out; /* Smooth transitions */
+        }
+
+        /* Bulb top part (holder) */
+        .bulb:before {
+            content: "";
+            position: absolute;
+            left: 22.5px;
+            top: -50px;
+            width: 35px;
+            height: 80px;
+            background: #444; /* Default dark holder */
+            border-top: 30px solid #000;
+            border-radius: 10px;
+            transition: background 0.5s ease-in-out; /* Smooth transition */
+        }
+
+        /* Light glow effect when bulb is on */
+        body.on .bulb::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 120px;
+            height: 120px;
+            background: #fff; /* White glow */
+            border-radius: 50%;
+            filter: blur(40px); /* Blurry glow effect */
+            opacity: 0; /* Start invisible */
+            animation: fadeInGlow 0.5s forwards; /* Fade in animation */
+        }
+
+        /* Keyframes for glow fade-in */
+        @keyframes fadeInGlow {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Bulb appearance when light is on */
+        body.on .bulb {
+            background-color: #fff; /* White bulb */
+            box-shadow: 0 0 50px #fff, 0 0 100px #fff, 0 0 150px #fff, 0 0 200px #fff,
+                        0 0 250px #fff, 0 0 300px #fff, 0 0 350px #fff; /* Intense white glow */
+        }
+
+        /* Bulb holder appearance when light is on */
+        body.on .bulb::before {
+            background: #fff; /* White holder */
+        }
+
+        /* Light rays effect when bulb is on */
+        body.on .bulb span:nth-child(1) {
+            box-shadow: 20px 20px 0 10px #fff; /* White ray 1 */
+        }
+
+        body.on .bulb span:nth-child(2) {
+            box-shadow: -20px 20px 0 10px #fff; /* White ray 2 */
+        }
+
+        /* Bulb initial "off" rays */
+        .bulb span:nth-child(1) {
+            position: absolute;
+            top: -16px;
+            left: -4px;
+            display: block;
+            width: 30px;
+            height: 30px;
+            background: transparent;
+            transform: rotate(342deg);
+            border-bottom-right-radius: 40px;
+            box-shadow: 20px 20px 0 10px #444; /* Dark ray 1 */
+            transition: box-shadow 0.5s ease-in-out; /* Smooth transition */
+        }
+
+        .bulb span:nth-child(2) {
+            position: absolute;
+            top: -16px;
+            right: -4px;
+            display: block;
+            width: 30px;
+            height: 30px;
+            background: transparent;
+            transform: rotate(17deg);
+            border-bottom-left-radius: 40px;
+            box-shadow: -20px 20px 0 10px #444; /* Dark ray 2 */
+            transition: box-shadow 0.5s ease-in-out; /* Smooth transition */
+        }
+
+        /* Switch container styling */
+        .switch {
+            position: absolute;
+            bottom: 50px;
+            right: 50px;
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(#eee, #ccc, #eee); /* Gray gradient */
+            border: 3px solid #000;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: rgba(0, 0, 0, 0.3) 0px 20px 30px -10px; /* Modern shadow */
+            cursor: pointer; /* Indicate interactivity */
+            transition: box-shadow 0.3s ease-in-out;
+        }
+
+        /* Switch button styling */
+        .switch .btn {
+            position: relative;
+            width: 25px;
+            height: 40px;
+            background: linear-gradient(#777, #fff, #777); /* Silver gradient */
+            border-radius: 6px;
+            border: 2px solid #000;
+            transition: top 0.2s ease-in-out; /* Smooth transition for button movement */
+        }
+
+        /* Switch button initial position (top) */
+        .switch .btn::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 85%;
+            background: linear-gradient(#fff, #fff); /* White highlight */
+            border-radius: 4px;
+        }
+
+        /* Switch button "on" position (pushed down) */
+        .on .switch .btn::before {
+            top: 15%; /* Moves button down */
+        }
+
+        /* Hide audio element */
+        #audio {
+            display: none;
+        }
+
+        /* Responsive adjustments for switch position */
+        @media (max-width: 768px) {
+            .switch {
+                bottom: 20px;
+                right: 20px;
+                width: 60px;
+                height: 60px;
+            }
+            .switch .btn {
+                width: 20px;
+                height: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="light">
+        <div class="wire"></div>
+        <div class="bulb">
+            <span></span>
+            <span></span>
+        </div>
+        <div class="switch">
+            <div class="btn"></div>
+        </div>
+    </div>
+
+    <!-- Audio element for sound effects -->
+    <audio id="audio" autostart="false">
+        <!-- Note: External audio URLs are not supported in this environment for security reasons. -->
+        <!-- You would typically embed audio data directly or use a supported local asset. -->
+    </audio>
+
+    <script>
+        // Get references to the DOM elements
+        let btn = document.querySelector(".btn");
+        let body = document.body;
+        let audio = document.querySelector("#audio");
+
+        // Add click event listener to the switch button
+        btn.addEventListener("click", () => {
+            // Toggle the 'on' class on the body to change background and light state
+            body.classList.toggle("on");
+            
+            // Play the audio sound
+            // This will only work if a valid audio source is provided for the #audio element.
+            // As external URLs are not supported, this might not produce sound in the Canvas.
+            audio.play().catch(e => console.error("Audio play failed:", e));
+        });
+    </script>
+</body>
+</html>
