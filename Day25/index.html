@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Typing Challenge</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts - Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Custom styles to ensure MathJax renders correctly if needed, though not directly used here. */
+        /* Also, to ensure the font-family is applied globally */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-700 to-indigo-900 text-white">
+    <div class="container bg-white p-8 md:p-12 rounded-2xl shadow-2xl w-11/12 max-w-2xl text-center flex flex-col items-center">
+        <!-- Display area for the text to type -->
+        <div class="main text-2xl md:text-3xl font-semibold p-6 border-4 border-purple-300 rounded-lg w-full mb-6 text-slate-800 bg-purple-50 transition-colors duration-300">
+            Click Start to begin the typing challenge!
+        </div>
+        <!-- Textarea for user input -->
+        <textarea name="words" class="typingArea w-full h-40 md:h-48 p-4 text-lg border-2 border-purple-300 rounded-lg focus:outline-none focus:ring-4 focus:ring-purple-500 transition-all duration-300 resize-none text-slate-800" placeholder="Start typing here..." disabled></textarea>
+        <!-- Start/Done button -->
+        <button class="btn mt-8 w-full md:w-1/2 lg:w-1/3 px-8 py-4 bg-purple-600 text-white text-2xl font-bold rounded-xl shadow-lg hover:bg-purple-700 hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-purple-500">
+            Start
+        </button>
+    </div>
+
+    <script>
+        // Get references to the DOM elements
+        const main = document.querySelector(".main");
+        const typeArea = document.querySelector(".typingArea");
+        const btn = document.querySelector(".btn");
+
+        // Array of words/phrases for the typing challenge
+        const words = [
+            "A day in the life of programmer",
+            "What is JavaScript?",
+            "What is React?",
+            "What is Programming Language?",
+            "What's your name?",
+            "Where are you from?",
+            "This is just random word",
+            "What is Remix.js?",
+            "New Technologies",
+            "Is programming hard?",
+            "Why do you wanna become a programmer?",
+            "Which programming language you like the most?",
+            "What is Golang? and why do you wanna learn it?",
+            "What is CSS",
+            "The quick brown fox jumps over the lazy dog",
+            "Practice makes perfect in coding",
+            "Frontend development is exciting",
+            "Building responsive web applications",
+            "Understanding asynchronous JavaScript",
+            "Learning new frameworks is fun",
+            "Clean code is maintainable code",
+            "Debugging is an essential skill",
+            "Version control with Git and GitHub",
+            "Exploring the world of web components",
+            "User experience is paramount",
+            "Performance optimization matters for web apps",
+            "Embrace continuous learning in tech",
+            "The future of web is interactive"
+        ];
+
+        // Game state object to track timing and user input
+        const game = {
+            start: 0, // Start time (Unix timestamp)
+            end: 0,   // End time (Unix timestamp)
+            user: "", // User's typed text
+            arrText: "", // The text displayed for typing
+        };
+
+        // Event listener for the Start/Done button
+        btn.addEventListener("click", () => {
+            if (btn.textContent === "Start") {
+                // If button says "Start", begin the game
+                play();
+                typeArea.value = ""; // Clear the typing area
+                typeArea.disabled = false; // Enable typing area
+                typeArea.focus(); // Focus on the typing area for immediate input
+            } else if (btn.textContent === "Done") {
+                // If button says "Done", end the game
+                typeArea.disabled = true; // Disable typing area
+                main.style.borderColor = "#a78bfa"; // Reset border color to a purple shade
+                end(); // Calculate and display results
+            }
+        });
+
+        // Function to start the game
+        function play() {
+            // Select a random text from the words array
+            let randText = Math.floor(Math.random() * words.length);
+            main.textContent = words[randText]; // Display the text
+            game.arrText = words[randText]; // Store the text in game state
+            main.style.borderColor = "#8b5cf6"; // Change border color to indicate active state
+            btn.textContent = "Done"; // Change button text to "Done"
+            const duration = new Date();
+            game.start = duration.getTime(); // Record start time
+        }
+
+        // Function to end the game and show results
+        function end() {
+            const duration = new Date();
+            game.end = duration.getTime(); // Record end time
+            const totalTime = (game.end - game.start) / 1000; // Calculate total time in seconds
+            game.user = typeArea.value; // Get user's typed text
+            const correct = results(); // Get typing accuracy results
+
+            // Display results in the main area
+            main.innerHTML = `Time: <span class="text-purple-600 font-bold">${totalTime.toFixed(2)}s</span> | Correct: <span class="text-green-500 font-bold">${correct.score}</span> out of <span class="text-blue-500 font-bold">${correct.total}</span> words`;
+            btn.textContent = "Start"; // Reset button text to "Start"
+        }
+
+        // Function to compare user's input with the displayed text and calculate score
+        function results() {
+            let valueOne = game.arrText.split(" "); // Split displayed text into words
+            let valueTwo = game.user.split(" "); // Split user's text into words
+            let score = 0;
+
+            // Compare word by word
+            valueOne.forEach((word, idx) => {
+                // Check if the word exists in user's input and matches
+                if (valueTwo[idx] && word.toLowerCase() === valueTwo[idx].toLowerCase()) {
+                    score++;
+                }
+            });
+
+            return { score, total: valueOne.length }; // Return score and total words
+        }
+    </script>
+</body>
+</html>
