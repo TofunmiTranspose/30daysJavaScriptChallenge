@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Random Background Color Changer</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts - Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            transition: background-color 0.5s ease-in-out; /* Smooth transition for background */
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center bg-blue-500 transition-colors duration-500">
+    <h1 class="text-white text-4xl md:text-5xl font-bold mb-8 drop-shadow-lg">Background Color:</h1>
+    <h2 id="hexCode" class="text-white text-5xl md:text-6xl font-extrabold mb-12 tracking-wide drop-shadow-xl">#8a2be2</h2>
+
+    <button id="btn" class="px-10 py-4 bg-transparent border-4 border-white text-white text-2xl font-semibold rounded-full shadow-lg hover:bg-white hover:text-blue-600 hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-white focus:ring-opacity-75 active:scale-95">
+        Click Me
+    </button>
+
+    <script>
+        // Get references to the DOM elements
+        const btn = document.getElementById("btn");
+        let hex = document.getElementById("hexCode"); // Element to display the hex code
+
+        // Function to generate a random hexadecimal color code
+        function randomColor() {
+            let letters = "0123456789ABCDEF"; // Hexadecimal characters
+            let color = "#"; // Start with '#' for hex code
+            for (let i = 0; i < 6; i++) {
+                // Append 6 random hex characters
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
+
+        // Add click event listener to the button
+        btn.addEventListener("click", () => {
+            const newColor = randomColor(); // Generate a new random color
+            document.body.style.backgroundColor = newColor; // Apply the color to the body background
+            hex.textContent = newColor; // Update the displayed hex code
+        });
+
+        // Set an initial random color when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            const initialColor = randomColor();
+            document.body.style.backgroundColor = initialColor;
+            hex.textContent = initialColor;
+        });
+    </script>
+</body>
+</html>
