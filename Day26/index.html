@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Stopwatch</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts - Inter for general text, Source Code Pro for timer -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Source+Code+Pro:wght@700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom styles for disabled buttons */
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-400 to-purple-600 text-white p-4">
+
+    <section id="stopwatch" class="flex flex-col items-center justify-center bg-white p-8 md:p-12 rounded-3xl shadow-2xl w-full max-w-md">
+        <h1 class="text-4xl md:text-5xl font-extrabold text-gray-800 mb-8 uppercase tracking-wide">Stop Watch</h1>
+        
+        <div id="timer" role="timer" class="font-['Source_Code_Pro'] text-6xl md:text-7xl font-bold text-purple-700 bg-purple-50 p-6 md:p-8 rounded-2xl shadow-lg mb-10 w-full max-w-xs text-center select-none">
+            00:00:00
+        </div>
+        
+        <div class="btns-container flex flex-wrap justify-center gap-4 w-full">
+            <button id="start-button" class="px-8 py-3 rounded-xl font-semibold text-xl bg-green-600 hover:bg-green-700 text-white shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-green-300">
+                Start
+            </button>
+            <button id="stop-button" class="px-8 py-3 rounded-xl font-semibold text-xl bg-red-600 hover:bg-red-700 text-white shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-red-300" disabled>
+                Stop
+            </button>
+            <button id="reset-button" class="px-8 py-3 rounded-xl font-semibold text-xl bg-blue-600 hover:bg-blue-700 text-white shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-300" disabled>
+                Reset
+            </button>
+        </div>
+    </section>
+
+    <script>
+        // Create Template Variables
+        const INTERVAL_MS = 1000 / 60; // Update interval for the timer (approx 60 frames per second)
+        let timerID; // Variable to hold the setInterval ID
+        let lastTimerStartTime = 0; // Timestamp when the timer was last started/resumed
+        let millisElapsedBeforeLastStart = 0; // Milliseconds accumulated before the last pause
+
+        // Get Our Data From The DOM
+        const timer = document.getElementById("timer");
+        const startButton = document.getElementById("start-button");
+        const stopButton = document.getElementById("stop-button");
+        const resetButton = document.getElementById("reset-button");
+
+        // USE EVENTS - Attach event listeners to the buttons
+        startButton.addEventListener("click", startTimer);
+        stopButton.addEventListener("click", stopTimer);
+        resetButton.addEventListener("click", resetTimers);
+
+        // ---- CREATING FUNCTIONS ----
+
+        // 1. startTimer: Function to start or resume the stopwatch
+        function startTimer() {
+            console.log("Start button clicked. Starting timer...");
+            // Disable Start button, enable Stop button, disable Reset button
+            startButton.disabled = true;
+            stopButton.disabled = false;
+            resetButton.disabled = true;
+
+            lastTimerStartTime = Date.now(); // Record the current time as the start time
+            timerID = setInterval(updateTimer, INTERVAL_MS); // Start updating the timer display
+        }
+
+        // 2. stopTimer: Function to pause the stopwatch
+        function stopTimer() {
+            console.log("Stop button clicked. Stopping timer...");
+            // Enable Start button, disable Stop button, enable Reset button
+            startButton.disabled = false;
+            stopButton.disabled = true;
+            resetButton.disabled = false;
+
+            // Accumulate elapsed time before pausing
+            millisElapsedBeforeLastStart += Date.now() - lastTimerStartTime;
+            clearInterval(timerID); // Stop the timer updates
+        }
+
+        // 3. resetTimers: Function to reset the stopwatch
+        function resetTimers() {
+            console.log("Reset button clicked. Resetting timer...");
+            // Disable Reset button (it will be enabled by stop or on initial load)
+            resetButton.disabled = true;
+            startButton.disabled = false; // Enable Start button
+            stopButton.disabled = true; // Disable Stop button
+
+            timer.textContent = "00:00:00"; // Reset timer display to "00:00:00"
+            millisElapsedBeforeLastStart = 0; // Reset accumulated time
+            lastTimerStartTime = 0; // Reset last start time
+            clearInterval(timerID); // Clear any running interval
+        }
+
+        // 4. updateTimer: Function to update the timer display
+        function updateTimer() {
+            // Calculate total milliseconds elapsed since the very beginning (including pauses)
+            const milllisElapsed = Date.now() - lastTimerStartTime + millisElapsedBeforeLastStart;
+
+            // Convert milliseconds to seconds and minutes
+            const secondsElapsed = milllisElapsed / 1000;
+            const minutesElapsed = secondsElapsed / 60;
+            const hoursElapsed = minutesElapsed / 60; // Added hours
+
+            // Format each component of the time
+            const millisText = formateNumber(milllisElapsed % 1000, 3); // Milliseconds (0-999)
+            const secondsText = formateNumber(Math.floor(secondsElapsed) % 60, 2); // Seconds (0-59)
+            const minutesText = formateNumber(Math.floor(minutesElapsed) % 60, 2); // Minutes (0-59)
+            const hoursText = formateNumber(Math.floor(hoursElapsed), 2); // Hours (can go above 59)
+
+            // Update the timer display
+            timer.textContent = `${hoursText}:${minutesText}:${secondsText}`; // Display HH:MM:SS
+            // If you want to include milliseconds, you could do: `${hoursText}:${minutesText}:${secondsText}:${millisText}`
+        }
+
+        // 5. formateNumber: Helper function to format numbers with leading zeros
+        function formateNumber(number, desiredLength) {
+            const stringNumber = String(Math.floor(number)); // Ensure it's an integer string
+            if (stringNumber.length > desiredLength) {
+                return stringNumber.slice(0, desiredLength); // Truncate if longer
+            }
+            return stringNumber.padStart(desiredLength, "0"); // Pad with leading zeros
+        }
+
+        // Initial state setup when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            resetButton.disabled = true; // Ensure reset is disabled on load
+            stopButton.disabled = true; // Ensure stop is disabled on load
+            startButton.disabled = false; // Ensure start is enabled on load
+        });
+    </script>
+</body>
+</html>
