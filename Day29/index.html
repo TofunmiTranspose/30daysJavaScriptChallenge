@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Progress Steps</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts - Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Custom CSS for elements that are complex to achieve solely with Tailwind,
+           or for maintaining the exact visual effect from the original CSS. */
+
+        body {
+            font-family: 'Inter', sans-serif;
+            /* Original background gradient */
+            background: linear-gradient(to right top, #ff3cac, #784ba0, #2b86c5);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden; /* Prevent scrollbars if content slightly exceeds viewport */
+            margin: 0;
+        }
+
+        .progress-container {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            margin-bottom: 30px;
+            max-width: 100%;
+            width: 350px; /* Fixed width as per original, but max-width ensures responsiveness */
+        }
+
+        /* The grey line behind the progress bar */
+        .progress-container::before {
+            content: "";
+            background-color: #e0e0e0; /* Secondary color */
+            position: absolute;
+            top: 50%;
+            left: 0;
+            transform: translateY(-50%);
+            height: 4px;
+            width: 100%;
+            z-index: -1;
+        }
+
+        /* The actual progress bar that fills up */
+        .progress {
+            background-color: #d23737; /* Primary color (crimson-like red) */
+            position: absolute;
+            top: 50%;
+            left: 0;
+            transform: translateY(-50%);
+            height: 4px;
+            width: 0%; /* Initial width, controlled by JS */
+            z-index: -1;
+            transition: width 0.4s ease; /* Smooth transition for width change */
+        }
+
+        /* Styling for the circles */
+        .circle {
+            background-color: #fff;
+            color: #999;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 3px solid #e0e0e0; /* Secondary color border */
+            transition: border-color 0.4s ease; /* Smooth transition for border color */
+            font-weight: 600; /* Make numbers bolder */
+            font-size: 0.9rem;
+        }
+
+        /* Active circle styling */
+        .circle.active {
+            border-color: #d23737; /* Primary color border */
+            color: #d23737; /* Text color for active circle */
+        }
+
+        /* Button styling */
+        .btn {
+            background-color: #d23737; /* Primary color */
+            color: #fff;
+            border: 0;
+            font-family: inherit;
+            padding: 8px 30px;
+            margin: 5px;
+            font-size: 14px;
+            cursor: pointer;
+            border-radius: 8px; /* Rounded corners for buttons */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+            transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .btn:active {
+            transform: scale(0.98); /* Click effect */
+        }
+
+        .btn:disabled {
+            background-color: #e0e0e0; /* Secondary color for disabled */
+            cursor: not-allowed;
+            box-shadow: none; /* No shadow when disabled */
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen overflow-hidden m-0">
+    <div class="container text-center bg-white p-8 rounded-xl shadow-2xl">
+        <div class="progress-container">
+            <div class="progress" id="progress"></div>
+            <div class="circle active">1</div>
+            <div class="circle">2</div>
+            <div class="circle">3</div>
+            <div class="circle">4</div>
+        </div>
+        <button class="btn" id="prev">Previous</button>
+        <button class="btn" id="next">Next</button>
+    </div>
+
+    <script>
+        // Get references to the DOM elements
+        const progress = document.getElementById("progress");
+        const prevBtn = document.getElementById("prev");
+        const nextBtn = document.getElementById("next");
+        const circles = document.querySelectorAll(".circle");
+
+        // Initialize the active step index
+        let activeIndex = 1;
+
+        // Event listener for the 'Next' button
+        nextBtn.addEventListener("click", () => {
+            activeIndex++; // Increment active index
+            // Ensure activeIndex does not exceed the number of circles
+            if (activeIndex > circles.length) {
+                activeIndex = circles.length;
+            }
+            updateUI(); // Update the UI based on the new active index
+        });
+
+        // Event listener for the 'Previous' button
+        prevBtn.addEventListener("click", () => {
+            activeIndex--; // Decrement active index
+            // Ensure activeIndex does not go below 1
+            if (activeIndex < 1) {
+                activeIndex = 1;
+            }
+            updateUI(); // Update the UI based on the new active index
+        });
+
+        // Function to update the UI (circles, progress bar, and button states)
+        function updateUI() {
+            // Iterate over each circle to add/remove 'active' class
+            circles.forEach((circle, index) => {
+                if (index < activeIndex) {
+                    circle.classList.add("active"); // Add active class if index is less than activeIndex
+                } else {
+                    circle.classList.remove("active"); // Remove active class otherwise
+                }
+            });
+
+            // Calculate the width of the progress bar
+            const actives = document.querySelectorAll(".circle.active"); // Get all active circles
+            progress.style.width =
+                ((actives.length - 1) / (circles.length - 1)) * 100 + "%"; // Calculate percentage width
+
+            // Update button disabled states
+            if (activeIndex === 1) {
+                prevBtn.disabled = true; // Disable 'Previous' button if on the first step
+            } else if (activeIndex === circles.length) {
+                nextBtn.disabled = true; // Disable 'Next' button if on the last step
+            } else {
+                // Enable both buttons if in an intermediate step
+                prevBtn.disabled = false;
+                nextBtn.disabled = false;
+            }
+        }
+
+        // Initial UI update when the page loads to set the correct states
+        document.addEventListener('DOMContentLoaded', updateUI);
+    </script>
+</body>
+</html>
